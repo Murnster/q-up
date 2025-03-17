@@ -1,0 +1,22 @@
+{
+	"name": "murney-events",
+	"version": "1.0.0",
+	"description": "Example Event App",
+	"main": "index.js",
+	"scripts": {
+		"client": "cd client && npm run dev",
+		"server": "cd server && npm run dev",
+		"dev": "concurrently \"npm run client\" \"npm run server\"",
+		"build": "cd client && npm run build && cd ../server && npm run build",
+		"start": "cd server && npm start"
+	},
+	"keywords": [],
+	"author": "Ryan Murney",
+	"license": "ISC",
+	"devDependencies": {
+		"concurrently": "^9.1.2",
+		"nodemon": "^3.1.9",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.8.2"
+	}
+}
