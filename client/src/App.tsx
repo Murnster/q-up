@@ -1,15 +1,19 @@
-import { useState } from 'react'
-import './css/index.css'
+import { Route, Routes } from 'react-router-dom';
+import { NavBar } from './components/navbar';
+import './css/index.css';
+import { Home } from './pages/home';
+import { Login } from './pages/login';
 
 function App() {
-	const [count, setCount] = useState(0)
-	
 	return (
 		<>
-			<h1>Event QR scanner app!</h1>
-			<div onClick={() => setCount(count + 1)}>
-				
-			</div>
+			<NavBar title="Home Page"></NavBar>
+			<Routes>
+				<Route path="/" element={<Home />} />
+				<Route path="/login" element={<Login />} />
+				<Route path="/scanner" element={<Login />} />
+				<Route path="/login" element={<Login />} />
+			</Routes>
 		</>
 	)
 }

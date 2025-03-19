@@ -1,7 +1,8 @@
 import js from '@eslint/js'
-import globals from 'globals'
+import importPlugin from 'eslint-plugin-import'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
+import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
@@ -12,10 +13,18 @@ export default tseslint.config(
 		languageOptions: {
 			ecmaVersion: 2020,
 			globals: globals.browser,
+			parser: tseslint.parser,
 		},
 		plugins: {
+			'@typescript-eslint': tseslint.plugin,
 			'react-hooks': reactHooks,
 			'react-refresh': reactRefresh,
+			'import': importPlugin,
+		},
+		settings: {
+			'import/resolver': {
+				typescript: true
+			}
 		},
 		rules: {
 			...reactHooks.configs.recommended.rules,
@@ -23,13 +32,38 @@ export default tseslint.config(
 				'warn',
 				{ allowConstantExport: true },
 			],
-			'typescript-eslint/no-unused-vars': [
+			'@typescript-eslint/no-unused-vars': [
 				'warn',
 				{
 					args: 'none',
 					ignoreRestSiblings: true,
 					vars: 'all',
 					varsIgnorePattern: '^_',
+				}
+			],
+			'import/order': [
+				'error',
+				{
+					groups: [
+						'index',
+						'builtin',
+						'external',
+						'internal',
+						'parent',
+						'sibling',
+					],
+					pathGroups: [
+						{
+							pattern: '**/*.css',
+							group: 'index',
+							position: 'before',
+						}
+					],
+					'newlines-between': 'never',
+					alphabetize: {
+						order: 'asc',
+						caseInsensitive: true
+					}
 				}
 			]
 		},
