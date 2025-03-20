@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { NavBar } from './components/navbar';
-import { AppRoutes } from './constants';
+import { AppRoutes } from './constants/routes';
 import './css/index.css';
 import { About } from './pages/about';
 import { EventManager } from './pages/event-manager';
 import { Home } from './pages/home';
 import { Login } from './pages/login';
 import { EventCreation } from './pages/new-event';
+import { QRScanner } from './pages/scanner';
 
 function App() {
 	const [token, setToken] = useState('');
@@ -33,6 +34,7 @@ function App() {
 				<Route path={ AppRoutes.HOME } element={ <Home /> } />
 				<Route path={ AppRoutes.EVENTS } element={ <EventManager /> } />
 				<Route path={ AppRoutes.NEW_EVENT } element={ <EventCreation /> } />
+				<Route path={ AppRoutes.SCANNER } element={ <QRScanner /> } />
 				<Route path={ AppRoutes.NOT_FOUND } element={ <Navigate to={ AppRoutes.HOME } replace /> } />
 			</Routes>
 		</>
