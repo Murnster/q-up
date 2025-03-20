@@ -61,6 +61,10 @@ html, body {
 	align-items: center;
 }
 
+.w100 {
+	width: 100%;
+}
+
 .navbar {
 	display: flex;
 	height: 70px;
@@ -75,4 +79,14 @@ html, body {
 .navbar h1 {
 	margin: 0;
 	padding: 0;
+}
+
+.qr-wrapper {
+	width: 60vh;
+	height: 60vh;
+}
+
+.qr-wrapper svg path {
+	stroke: #00FF00;
+	stroke-width: 1px;
 }
