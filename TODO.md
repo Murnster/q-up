@@ -21,6 +21,7 @@
 5. **Session Management**
 
 - Build session storing
+- Handle syncing device if gone offline
 
 # Miscellanous
 
