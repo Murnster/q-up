@@ -1,19 +1,19 @@
-import { useState } from "react";
+import { Scanner } from "@yudiel/react-qr-scanner";
 import { Button } from "../components/button";
-import { Input } from "../components/input";
+import { useAppNavigation } from "../hooks/navigation";
 
 export const Home = () => {
-	const [inputValue, setInputValue] = useState('')
-	
-	const handleButtonClick = () => {
-		console.log('Button clicked!')
-		console.log('Input value:', inputValue);
-	}
+	const { goToEvents, goToNewEvent } = useAppNavigation();
 	
 	return (
 		<>
-			<Input value={inputValue} onChange={setInputValue} label="Input label"></Input>
-			<Button label="Test Button" clickHandler={handleButtonClick} />
+			<div className="fc g5">
+				<Button label="Start an Event" clickHandler={ goToNewEvent } />
+				<Button label="Manage Events" clickHandler={ goToEvents } />
+				{ /* <Button label="Scan QR" clickHandler={ QRScanner } /> */ }
+				{ /* TODO Make scanner page and pass this component there! */ }
+				<Scanner onScan={ (result) => console.log(result) } />
+			</div>
 		</>
-	)
-}
+	);
+};

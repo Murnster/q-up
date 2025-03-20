@@ -1,21 +1,22 @@
-import { useNavigate } from "react-router-dom";
+import { useAppNavigation } from "../hooks/navigation";
 import { Button } from "./button";
 
 interface NavBarProps {
 	title: string;
 }
 
-export const NavBar = ({title}: NavBarProps) => {
-	const navigate = useNavigate();
+export const NavBar = ({ title }: NavBarProps) => {
+	const { goBack } = useAppNavigation();
 	
 	return (
-		<div className="navbar flex-row">
-			<div className="navbarTitle flex-row">
-				<h1>{title}</h1>
+		<div className="navbar fr">
+			<div className="navbarTitle fr g10 vertCenter">
+				<Button label="Back" clickHandler={ goBack } />
+				<h1>{ title }</h1>
 			</div>
 			<div className="navbarActions">
-				<Button label="Login" clickHandler={() => navigate('/login')} />
+				<Button label="Button" clickHandler={ () => console.log('Hiya') } />
 			</div>
 		</div>
-	)
-}
+	);
+};

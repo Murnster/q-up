@@ -31,12 +31,12 @@ html, body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.flex-column {
+.fc {
 	display: flex;
 	flex-direction: column;
 }
 
-.flex-row {
+.fr {
 	display: flex;
 	flex-direction: row;
 }
@@ -55,6 +55,10 @@ html, body {
 
 .m10 {
 	margin: 10px;
+}
+
+.vertCenter {
+	align-items: center;
 }
 
 .navbar {

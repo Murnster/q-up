@@ -1,5 +1,6 @@
 import js from '@eslint/js'
 import importPlugin from 'eslint-plugin-import'
+import reactPlugin from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import globals from 'globals'
@@ -12,14 +13,24 @@ export default tseslint.config(
 		files: ['**/*.{ts,tsx}'],
 		languageOptions: {
 			ecmaVersion: 2020,
-			globals: globals.browser,
+			globals: {
+				...globals.browser,
+				React: true,
+				JSX: true,
+			},
 			parser: tseslint.parser,
+			parserOptions: {
+				ecmaFeatures: {
+					jsx: true,
+				},
+			},
 		},
 		plugins: {
 			'@typescript-eslint': tseslint.plugin,
+			'import': importPlugin,
 			'react-hooks': reactHooks,
 			'react-refresh': reactRefresh,
-			'import': importPlugin,
+			'react': reactPlugin,
 		},
 		settings: {
 			'import/resolver': {
@@ -41,6 +52,16 @@ export default tseslint.config(
 					varsIgnorePattern: '^_',
 				}
 			],
+			'object-curly-spacing': ['warn', 'always'],
+			'semi': ['error', 'always'],
+			'react/jsx-curly-spacing': ['warn', {
+				when: 'always',
+				children: true,
+				attributes: true,
+				spacing: {
+					objectLiterals: 'never'
+				}
+			}],
 			'import/order': [
 				'error',
 				{
