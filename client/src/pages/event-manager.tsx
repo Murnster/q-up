@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAppNavigation } from "../hooks/navigation";
 
 interface Event {
 	eventID: number;
@@ -7,6 +8,7 @@ interface Event {
 }
 
 export const EventManager = () => {
+	const { goToEventQR } = useAppNavigation();
 	const [activeEvents, setActiveEvents] = useState<Event[]>([]);
 	
 	const fetchEvents = () => {
@@ -27,7 +29,7 @@ export const EventManager = () => {
 				{
 					activeEvents.map((event) => {
 						return (
-							<div key={ event.eventID } className="fc g5">
+							<div key={ event.eventID } onClick={ () => goToEventQR(event.eventID) } className="fc g5">
 								<div data-eventid={ event.eventID }>{ event.name }</div>
 								<div>{ event.description }</div>
 							</div>
