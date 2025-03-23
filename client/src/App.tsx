@@ -5,6 +5,7 @@ import { AppRoutes } from './constants/routes';
 import './css/index.css';
 import { About } from './pages/about';
 import { EventManager } from './pages/event-manager';
+import { EventQR } from './pages/event-qr';
 import { Home } from './pages/home';
 import { Login } from './pages/login';
 import { EventCreation } from './pages/new-event';
@@ -35,6 +36,7 @@ function App() {
 				<Route path={ AppRoutes.EVENTS } element={ <EventManager /> } />
 				<Route path={ AppRoutes.NEW_EVENT } element={ <EventCreation /> } />
 				<Route path={ AppRoutes.SCANNER } element={ <QRScanner /> } />
+				<Route path={ AppRoutes.EVENT_QR } element={ <EventQR /> } />
 				<Route path={ AppRoutes.NOT_FOUND } element={ <Navigate to={ AppRoutes.HOME } replace /> } />
 			</Routes>
 		</>
