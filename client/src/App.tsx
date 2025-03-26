@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { NavBar } from './components/navbar';
 import { AppRoutes } from './constants/routes';
@@ -13,7 +13,27 @@ import { QRScanner } from './pages/scanner';
 
 function App() {
 	const [token, setToken] = useState('');
-	const isDev = false;
+	const isDev = true;
+	
+	useEffect(() => {
+		async function post() {
+			await fetch('http://localhost:3000/session', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).then(async (res) => {
+				if (res.status === 200) {
+					setToken(await res.text());
+				}
+			});
+		}
+		
+		if (isDev) {
+			post();
+		}
+	});
+	
 	
 	if (!token && !isDev) {
 		return (
