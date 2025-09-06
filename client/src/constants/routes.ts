@@ -5,6 +5,7 @@ export const AppRoutes = {
 	NEW_EVENT: '/new-event',
 	SCANNER: '/scanner',
 	EVENT_QR: '/event-qr/:eventID',
+	USER_CREATION: '/create-user',
 	NOT_FOUND: '*'
 } as const;
 

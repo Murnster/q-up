@@ -2,11 +2,11 @@ import { useState } from "react";
 import { TextInput } from "../components/text-input";
 import { useAppNavigation } from "../hooks/navigation";
 
-interface LoginProps {
-	setToken: (token: string) => void;
-}
+// interface LoginProps {
+// 	setUser: (user: UserDetails) => void;
+// }
 
-export const Login = ({ setToken }: LoginProps) => {
+export const Login = () => {
 	const [password, setPassword] = useState('');
 	const [username, setUsername] = useState('');
 	const { goToHome } = useAppNavigation();
@@ -15,13 +15,10 @@ export const Login = ({ setToken }: LoginProps) => {
 		console.log(username, password);
 		const token = '1234567890';
 		
-		// do api call here
+		// TODO: Do API call here
 		
-		if (token.length) {
-			setToken(token);
-		}
 		
-		// redirect to home page
+		// TODO redirect to home page
 		goToHome();
 	};
 	

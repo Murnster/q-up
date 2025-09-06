@@ -1,12 +1,13 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import { endpoints } from './endpoints.js';
 
-dotenv.config();
 
 const app = express();
 
@@ -35,7 +36,7 @@ app.use(cookieParser());
 endpoints(app);
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response) => {
 	console.error('Express Server Error:', {
 		name: err.name,
 		message: err.message,
@@ -44,7 +45,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 		method: req.method
 	});
 	
-	res.status(500).json({
+	res.status(ServerCodes.INTERNAL_SERVER_ERROR).json({
 		status: 'error',
 		message: process.env.PRODUCTION === 'true' ? 'Internal server error' : err.message
 	});
@@ -52,7 +53,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 
 // 404
 app.use('*', (req: express.Request, res: express.Response) => {
-	res.status(404).json({
+	res.status(ServerCodes.NOT_FOUND).json({
 		status: 'error',
 		message: `Route ${req.originalUrl} not found`
 	});
@@ -74,7 +75,7 @@ const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
 	console.info(`Murney Events running on port: ${port}`);
 	
-	if (process.env.REDIS_IP == null || process.env.REDIS_PORT == null) {
+	if (process.env.REDIS_HOST == null || process.env.REDIS_PORT == null) {
 		console.info('There is missing Redis configuration. Please check your environment variables.');
 	}
 }).on('error', (error: Error) => {
@@ -91,3 +92,11 @@ process.on('SIGTERM', () => {
 });
 
 export default app;
+
+export enum ServerCodes {
+	BAD_REQUEST = 400,
+	UNAUTHORIZED = 401,
+	FORBIDDEN = 403,
+	NOT_FOUND = 404,
+	INTERNAL_SERVER_ERROR = 500,
+}

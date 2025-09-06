@@ -1,5 +1,17 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 
-export const CreateEvent = async (req: Request, res: Response, next: NextFunction) => {
+export const CreateEvent = async (req: Request, res: Response) => {
+	
+};
+
+export const GetEvents = async (req: Request, res: Response) => {
+	
+};
+
+export const DeleteEvent = async (req: Request, res: Response) => {
+	
+};
+
+export const RegisterForEvent = async (req: Request, res: Response) => {
 	
 };

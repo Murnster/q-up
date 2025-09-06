@@ -14,7 +14,7 @@ export const EventManager = () => {
 	const fetchEvents = () => {
 		console.log('Fetch Events');
 		
-		// Network request to fetch events
+		// TODO Network request to fetch events
 		setActiveEvents([{ eventID: 1, name: 'Event', description: 'Event Description' }]);
 	};
 	

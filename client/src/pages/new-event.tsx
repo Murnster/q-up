@@ -8,7 +8,7 @@ export const EventCreation = () => {
 	const [eventDescription, setEventDescription] = useState('');
 	const [eventHours, setEventHours] = useState(0);
 	
-	// Create event - validate event during creation
+	// TODO Create event - validate event during creation
 	const createEvent = () => {
 		console.log('Create Event');
 		
@@ -18,7 +18,7 @@ export const EventCreation = () => {
 		}
 	};
 	
-	// Valid event
+	// TODO Valid event
 	
 	const validateEvent = () => {
 		console.log('Validate Event');
@@ -27,11 +27,11 @@ export const EventCreation = () => {
 	
 	const saveEvent = () => {
 		console.log('Save Event');
-		// Network request to save event
-		// handle failures?
+		// TODO Network request to save event
+		// TODO handle failures?
 	};
 	
-	// navigate to event page?
+	// TODO navigate to event page?
 	
 	return (
 		<>

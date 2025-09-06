@@ -5,7 +5,7 @@
 - Build out wireframe pages
 - Implement navigation between pages
 
-2. **Event Management**
+**Event Management**
 
 - Set up event creation screen
 - Set up event selection screen
@@ -26,3 +26,4 @@
 # Miscellanous
 
 - Eslint CSS import sorting just hates me!
+- Move Login Btn to NavBar
