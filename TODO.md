@@ -16,8 +16,13 @@
 
 **Session Management**
 
+- Redux
 - Build session storing
 - Handle syncing device if gone offline
+
+# UX
+
+- Login/out button on nav bar
 
 # Miscellanous
 

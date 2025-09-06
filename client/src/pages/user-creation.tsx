@@ -3,23 +3,23 @@ import { TextInput } from "../components/text-input";
 import { CreateUserErrors, UserDetails } from "../constants/interfaces";
 import { useFetch } from "../hooks/fetch";
 import { useAppNavigation } from "../hooks/navigation";
+import { useCredentials } from "../hooks/use-crendentials";
 
-interface CreateUserProps {
-	setUser: (user: UserDetails) => void;
-}
+// interface CreateUserProps {
+// 	setUser: (user: UserDetails) => void;
+// }
 
-export const CreateUser = ({ setUser }: CreateUserProps) => {
+export const CreateUser = () => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
+	const { setUser } = useCredentials();
 	const [userNameWarning, setUserNameWarning] = useState('');
 	const { fetchData } = useFetch<UserDetails>();
 	const { goToHome } = useAppNavigation();
 	
 	const createUser = async () => {
-		console.log(username, password, firstName, lastName);
-		
 		const result = await fetchData('/create-user', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },

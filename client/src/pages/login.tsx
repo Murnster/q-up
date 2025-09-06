@@ -3,14 +3,16 @@ import { TextInput } from "../components/text-input";
 import { UserDetails } from "../constants/interfaces";
 import { useFetch } from "../hooks/fetch";
 import { useAppNavigation } from "../hooks/navigation";
+import { useCredentials } from "../hooks/use-crendentials";
 
-interface LoginProps {
-	setUser: (user: UserDetails) => void;
-}
+// interface LoginProps {
+// 	setUser: (user: UserDetails) => void;
+// }
 
-export const Login = ({ setUser }: LoginProps) => {
+export const Login = () => {
 	const [password, setPassword] = useState('');
 	const [username, setUsername] = useState('');
+	const { setUser } = useCredentials();
 	const { fetchData } = useFetch<UserDetails>();
 	const { goToHome } = useAppNavigation();
 	

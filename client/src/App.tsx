@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { NavBar } from './components/navbar';
 import { UserDetails } from './constants/interfaces';
 import { AppRoutes } from './constants/routes';
 import './css/index.css';
 import { useFetch } from './hooks/fetch';
+import { useCredentials } from './hooks/use-crendentials';
 import { About } from './pages/about';
 import { EventManager } from './pages/event-manager';
 import { EventQR } from './pages/event-qr';
@@ -15,7 +16,7 @@ import { QRScanner } from './pages/scanner';
 import { CreateUser } from './pages/user-creation';
 
 function App() {
-	const [user, setUser] = useState<UserDetails | null>(null);
+	const { user, setUser } = useCredentials();
 	const { payload, fetchData } = useFetch<UserDetails>();
 	const isDev = false;
 	
@@ -31,7 +32,7 @@ function App() {
 		if (payload?.data?.userID) {
 			setUser(payload.data);
 		}
-	}, [payload]);
+	}, [payload, setUser]);
 	
 	if (!user && !isDev) {
 		return (
@@ -39,8 +40,8 @@ function App() {
 				<NavBar title="About"></NavBar>
 				<Routes>
 					<Route path={ AppRoutes.HOME } element={ <About /> } />
-					<Route path={ AppRoutes.LOGIN } element={ <Login setUser={ setUser } /> } />
-					<Route path={ AppRoutes.USER_CREATION } element={ <CreateUser setUser={ setUser }/> } />
+					<Route path={ AppRoutes.LOGIN } element={ <Login /> } />
+					<Route path={ AppRoutes.USER_CREATION } element={ <CreateUser /> } />
 					<Route path={ AppRoutes.NOT_FOUND } element={ <Navigate to={ AppRoutes.LOGIN } replace /> } />
 				</Routes>
 			</>
