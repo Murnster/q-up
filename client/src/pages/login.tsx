@@ -1,25 +1,38 @@
 import { useState } from "react";
 import { TextInput } from "../components/text-input";
+import { UserDetails } from "../constants/interfaces";
+import { useFetch } from "../hooks/fetch";
 import { useAppNavigation } from "../hooks/navigation";
 
-// interface LoginProps {
-// 	setUser: (user: UserDetails) => void;
-// }
+interface LoginProps {
+	setUser: (user: UserDetails) => void;
+}
 
-export const Login = () => {
+export const Login = ({ setUser }: LoginProps) => {
 	const [password, setPassword] = useState('');
 	const [username, setUsername] = useState('');
+	const { fetchData } = useFetch<UserDetails>();
 	const { goToHome } = useAppNavigation();
 	
-	const doLogin = () => {
-		console.log(username, password);
-		const token = '1234567890';
+	const doLogin = async () => {
+		const result = await fetchData('/login', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			credentials: 'include',
+			body: JSON.stringify({
+				username,
+				password
+			})
+		});
 		
-		// TODO: Do API call here
-		
-		
-		// TODO redirect to home page
-		goToHome();
+		if (result != null) {
+			if (result?.errorCode) {
+				// handleCreateUserError(result.errorCode);
+			} else if (result?.data) {
+				setUser(result.data);
+				goToHome();
+			}
+		}
 	};
 	
 	return (

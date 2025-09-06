@@ -33,7 +33,6 @@ const passwordHashRounds = 10;
 
 export const CheckSession = async (req: Request, res: Response) => {
 	const token: string = req.cookies?.authToken;
-	console.log(req.cookies);
 	
 	if (!token) {
 		SendResponse(res, {
@@ -146,7 +145,7 @@ export const CheckUsername = async (req: Request, res: Response) => {
 
 export const CreateUser = async (req: Request, res: Response) => {
 	const { username, password, firstName, lastName }: CreateUserPayload = req.body;
-	console.log(req.body);
+	
 	if (!username || !password || !firstName || !lastName) {
 		SendResponse(res, {
 			status: ServerCodes.BAD_REQUEST,
@@ -169,8 +168,6 @@ export const CreateUser = async (req: Request, res: Response) => {
 			// Note that userID is generated here, but in real-world, we'd increment off a table or some existing list.
 			const userID = randomUUID();
 			const newToken = randomUUID();
-			
-			console.log('here before failure');
 			
 			await SetData(`user:${username}`, JSON.stringify({
 				username,

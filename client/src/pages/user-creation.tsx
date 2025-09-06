@@ -9,10 +9,10 @@ interface CreateUserProps {
 }
 
 export const CreateUser = ({ setUser }: CreateUserProps) => {
-	const [password, setPassword] = useState('ryan');
-	const [username, setUsername] = useState('pass');
-	const [firstName, setFirstName] = useState('Ryan');
-	const [lastName, setLastName] = useState('Murney');
+	const [username, setUsername] = useState('');
+	const [password, setPassword] = useState('');
+	const [firstName, setFirstName] = useState('');
+	const [lastName, setLastName] = useState('');
 	const [userNameWarning, setUserNameWarning] = useState('');
 	const { fetchData } = useFetch<UserDetails>();
 	const { goToHome } = useAppNavigation();
@@ -31,8 +31,6 @@ export const CreateUser = ({ setUser }: CreateUserProps) => {
 				lastName
 			})
 		});
-		
-		console.log(result);
 		
 		if (result != null) {
 			if (result?.errorCode) {

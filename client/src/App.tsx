@@ -39,7 +39,7 @@ function App() {
 				<NavBar title="About"></NavBar>
 				<Routes>
 					<Route path={ AppRoutes.HOME } element={ <About /> } />
-					<Route path={ AppRoutes.LOGIN } element={ <Login /> } />
+					<Route path={ AppRoutes.LOGIN } element={ <Login setUser={ setUser } /> } />
 					<Route path={ AppRoutes.USER_CREATION } element={ <CreateUser setUser={ setUser }/> } />
 					<Route path={ AppRoutes.NOT_FOUND } element={ <Navigate to={ AppRoutes.LOGIN } replace /> } />
 				</Routes>
