@@ -5,10 +5,6 @@ import { useFetch } from "../hooks/fetch";
 import { useAppNavigation } from "../hooks/navigation";
 import { useCredentials } from "../hooks/use-crendentials";
 
-// interface LoginProps {
-// 	setUser: (user: UserDetails) => void;
-// }
-
 export const Login = () => {
 	const [password, setPassword] = useState('');
 	const [username, setUsername] = useState('');
@@ -29,6 +25,7 @@ export const Login = () => {
 		
 		if (result != null) {
 			if (result?.errorCode) {
+				// TODO: Error handling
 				// handleCreateUserError(result.errorCode);
 			} else if (result?.data) {
 				setUser(result.data);
@@ -39,7 +36,7 @@ export const Login = () => {
 	
 	return (
 		<>
-			<div className="fc g5">
+			<div className="fc g5 p10">
 				<TextInput label={ "Username" } value={ username } onChange={ setUsername }></TextInput>
 				<TextInput label={ "Password" } value={ password } onChange={ setPassword }></TextInput>
 				<button onClick={ doLogin }>Login</button>

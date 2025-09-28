@@ -17,7 +17,7 @@ export const QRScanner = () => {
 	
 	return (
 		<>
-			<div className="fc g5 w100 vertCenter">
+			<div className="fc g5 w100 vertCenter p10">
 				Scan QR here
 				<div className="qr-wrapper w100 fr vertCenter">
 					<Scanner styles={{ container: { "border": "20px solid black" } }} onScan={ (result) => handleScan(result) } />

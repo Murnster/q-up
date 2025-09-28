@@ -5,10 +5,6 @@ import { useFetch } from "../hooks/fetch";
 import { useAppNavigation } from "../hooks/navigation";
 import { useCredentials } from "../hooks/use-crendentials";
 
-// interface CreateUserProps {
-// 	setUser: (user: UserDetails) => void;
-// }
-
 export const CreateUser = () => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
@@ -50,8 +46,8 @@ export const CreateUser = () => {
 	
 	return (
 		<>
-			<div className="fc g5">
-				<div className="hidden textWarning">{ userNameWarning }</div>
+			<div className="fc g5 p10">
+				<div className={ `textWarning ${!userNameWarning ? '' : 'hidden'}` }>{ userNameWarning }</div>
 				<TextInput label={ "Username" } value={ username } onChange={ setUsername }></TextInput>
 				<TextInput label={ "Password" } value={ password } onChange={ setPassword }></TextInput>
 				<TextInput label={ "First Name" } value={ firstName } onChange={ setFirstName }></TextInput>

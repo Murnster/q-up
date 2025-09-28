@@ -25,7 +25,7 @@ export const EventManager = () => {
 	return (
 		<>
 			<div>Select your active events</div>
-			<div className="fc g5">
+			<div className="fc g5 p10">
 				{
 					activeEvents.map((event) => {
 						return (
