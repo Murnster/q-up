@@ -61,6 +61,41 @@ export const GetRawData = async (key: string) => {
 	}
 }
 
+export const SetData_ByHashKey = async (hashKey: string, key: string, value: string, expiry = 86400) => {
+	await ConnectToDB();
+	
+	try {
+		await client.hSet(hashKey, key, value);
+		await client.expire(hashKey, expiry);
+	} catch (error) {
+		console.error('Error setting data in Redis Hash:', error);
+	}
+};
+
+export const GetData_ByHashKey = async <T>(hashKey: string, key: string) => {
+	await ConnectToDB();
+	
+	try {
+		const value = await client.hGet(hashKey, key);
+		return !value ? null : <T>JSON.parse(value);
+	} catch (error) {
+		console.error('Error getting data from Redis Hash:', error);
+		return null;
+	}
+};
+
+export const GetAllData_FromHashKey = async <T>(hashKey: string) => {
+	await ConnectToDB();
+	
+	try {
+		const values = await client.hVals(hashKey);
+		return values.map(value => JSON.parse(value)) as T[];
+	} catch (error) {
+		console.error('Error getting all data from Redis Hash:', error);
+		return null;
+	}
+};
+
 export const GetDataByPattern = async <T>(pattern: string) => {
 	await ConnectToDB();
 	

@@ -11,6 +11,7 @@ export interface UserDetails {
 // #region Events
 
 export interface EventDetails {
+	eventID: string;
 	name: string
 	description: string;
 	startTime: string;
