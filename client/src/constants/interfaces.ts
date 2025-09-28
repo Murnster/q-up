@@ -18,6 +18,18 @@ export interface EventDetails {
 	endTime: string;
 }
 
+export interface GetEventsPayload {
+	events: EventDetails[];
+	signups: { [eventID: string]: EventSignup[] };
+}
+
+export interface EventSignup {
+	signupID: string;
+	eventID: string;
+	userID: string;
+	timestamp: string;
+}
+
 // #endregion
 
 // #region Errors

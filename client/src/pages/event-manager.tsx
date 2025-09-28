@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import { EventDetails } from "../constants/interfaces";
+import { EventDetails, GetEventsPayload } from "../constants/interfaces";
 import { useFetch } from "../hooks/fetch";
 import { useAppNavigation } from "../hooks/navigation";
 
 export const EventManager = () => {
 	const { goToEventQR } = useAppNavigation();
-	const { fetchData } = useFetch<EventDetails[]>();
+	const { fetchData } = useFetch<GetEventsPayload>();
 	const [activeEvents, setActiveEvents] = useState<EventDetails[]>([]);
 	const [getEventsWarning, setGetEventsWarning] = useState('');
 	
@@ -19,8 +19,9 @@ export const EventManager = () => {
 		if (result != null) {
 			if (result?.errorCode) {
 				handleGetEventsError();
-			} else if (result?.data) {
-				setActiveEvents(result.data);
+			} else if (result?.data?.events) {
+				console.log(result.data);
+				setActiveEvents(result.data.events);
 			}
 		}
 	}, [fetchData]);
@@ -37,7 +38,7 @@ export const EventManager = () => {
 		<>
 			<div>Select your active events</div>
 			<div className="fc g5 p10">
-				<div className={ `textWarning ${getEventsWarning ? '' : 'hidden'}` }>{ getEventsWarning }</div>
+				<div className={ `textWarning ${!getEventsWarning ? 'hidden' : ''}` }>{ getEventsWarning }</div>
 				{
 					activeEvents.map((event) => {
 						return (
