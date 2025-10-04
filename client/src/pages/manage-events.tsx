@@ -27,7 +27,7 @@ export const EventManager = () => {
 	}, [fetchData]);
 	
 	const handleGetEventsError = () => {
-		setGetEventsWarning('Username already exists. Please choose another one.');
+		setGetEventsWarning('Failed to fetch events. Please try again later.');
 	};
 	
 	useEffect(() => {

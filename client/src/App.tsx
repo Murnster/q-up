@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { NavBar } from './components/navbar';
 import { UserDetails } from './constants/interfaces';
@@ -7,32 +7,50 @@ import './css/index.css';
 import { useFetch } from './hooks/fetch';
 import { useCredentials } from './hooks/use-crendentials';
 import { About } from './pages/about';
-import { EventManager } from './pages/event-manager';
-import { EventQR } from './pages/event-qr';
+import { CreateUser } from './pages/create-user';
 import { Home } from './pages/home';
 import { Login } from './pages/login';
+import { EventManager } from './pages/manage-events';
 import { EventCreation } from './pages/new-event';
 import { QRScanner } from './pages/scanner';
-import { CreateUser } from './pages/user-creation';
+import { EventView } from './pages/view-event';
 
 function App() {
 	const { user, setUser } = useCredentials();
 	const { payload, fetchData } = useFetch<UserDetails>();
+	const [sessionChecked, setSessionChecked] = useState(false);
 	const isDev = false;
 	
 	useEffect(() => {
-		fetchData('/session', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			credentials: 'include',
-		});
+		const checkSession = async () => {
+			await fetchData('/session', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+			});
+		};
+		
+		checkSession();
 	}, [fetchData]);
 	
 	useEffect(() => {
 		if (payload?.data?.userID) {
 			setUser(payload.data);
 		}
+		
+		if (payload) {
+			setSessionChecked(true);
+		}
 	}, [payload, setUser]);
+	
+	if (!sessionChecked) {
+		return (
+			<>
+				<NavBar title="About"></NavBar>
+				<div>Loading...</div>
+			</>
+		);
+	}
 	
 	if (!user && !isDev) {
 		return (
@@ -56,7 +74,7 @@ function App() {
 				<Route path={ AppRoutes.EVENTS } element={ <EventManager /> } />
 				<Route path={ AppRoutes.NEW_EVENT } element={ <EventCreation /> } />
 				<Route path={ AppRoutes.SCANNER } element={ <QRScanner /> } />
-				<Route path={ AppRoutes.EVENT_QR } element={ <EventQR /> } />
+				<Route path={ AppRoutes.EVENT_QR } element={ <EventView /> } />
 				<Route path={ AppRoutes.NOT_FOUND } element={ <Navigate to={ AppRoutes.HOME } replace /> } />
 			</Routes>
 		</>

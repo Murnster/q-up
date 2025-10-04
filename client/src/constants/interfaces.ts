@@ -12,6 +12,7 @@ export interface UserDetails {
 
 export interface EventDetails {
 	eventID: string;
+	createdBy: string;
 	name: string
 	description: string;
 	startTime: string;
@@ -21,6 +22,12 @@ export interface EventDetails {
 export interface GetEventsPayload {
 	events: EventDetails[];
 	signups: { [eventID: string]: EventSignup[] };
+}
+
+export interface GetEventDetailsPayload {
+	event: EventDetails;
+	signups: EventSignup[];
+	users: { [userID: string]: UserDetails };
 }
 
 export interface EventSignup {

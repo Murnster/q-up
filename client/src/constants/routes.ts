@@ -4,7 +4,7 @@ export const AppRoutes = {
 	LOGIN: '/login',
 	NEW_EVENT: '/new-event',
 	SCANNER: '/scanner',
-	EVENT_QR: '/event-qr/:eventID',
+	EVENT_QR: '/event/:eventID',
 	USER_CREATION: '/create-user',
 	NOT_FOUND: '*'
 } as const;

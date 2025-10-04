@@ -25,19 +25,19 @@ export const ConnectToDB = async () => {
 	}
 };
 
-export const SetData = async (key: string, value: string, expiry = 86400) => {
+export const SetData_ByKey = async (key: string, value: string, expiry = 86400) => {
 	await ConnectToDB();
 	
 	try {
 		await client.set(key, value, {
-			EX: expiry
+			expiration: { type: 'EX', value: expiry }
 		});
 	} catch (error) {
 		console.error('Error setting data in Redis:', error);
 	}
 }
 
-export const GetData = async <T>(key: string) => {
+export const GetData_ByKey = async <T>(key: string) => {
 	await ConnectToDB();
 	
 	try {
@@ -49,7 +49,7 @@ export const GetData = async <T>(key: string) => {
 	}
 }
 
-export const GetRawData = async (key: string) => {
+export const GetRawData_ByKey = async (key: string) => {
 	await ConnectToDB();
 	
 	try {
@@ -80,6 +80,19 @@ export const GetData_ByHashKey = async <T>(hashKey: string, key: string) => {
 		return !value ? null : <T>JSON.parse(value);
 	} catch (error) {
 		console.error('Error getting data from Redis Hash:', error);
+		return null;
+	}
+};
+
+export const GetData_ByKeys = async <T>(keys: string[]) => {
+	if (keys.length === 0) return [];
+	await ConnectToDB();
+	
+	try {
+		const values = await client.mGet(keys);
+		return values.map(value => value ? JSON.parse(value) as T : null);
+	} catch (error) {
+		console.error('Error getting data by keys from Redis:', error);
 		return null;
 	}
 };
@@ -125,7 +138,7 @@ export const GetDataByPattern = async <T>(pattern: string) => {
 	}
 };
 
-export const DeleteData = async (key: string) => {
+export const DeleteData_ByKey = async (key: string) => {
 	await ConnectToDB();
 	
 	try {

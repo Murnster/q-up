@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 import { CreateUserErrors, UserDetails } from '../../client/src/constants/interfaces.js';
-import { GetData, SetData } from './database.js';
+import { GetData_ByKey, SetData_ByKey } from './database.js';
 import { ServerCodes } from './server.js';
 import { SendResponse } from './util.js';
 
@@ -31,6 +31,7 @@ export interface TokenData {
 
 const passwordHashRounds = 10;
 
+// Deprecate this, unnecessary I think
 export const CheckSession = async (req: Request, res: Response) => {
 	const token: string = req.cookies?.authToken;
 	
@@ -41,7 +42,7 @@ export const CheckSession = async (req: Request, res: Response) => {
 			}
 		});
 	} else {
-		const sessionData = await GetData<TokenData>(`token:${token}`);
+		const sessionData = await GetData_ByKey<TokenData>(`token:${token}`);
 		
 		if (!sessionData) {
 			res.clearCookie('authToken', {
@@ -85,7 +86,7 @@ export const DoLogin = async (req: Request, res: Response) => {
 			const userDetails = await GetUser(user.userID);
 			const newToken = randomUUID();
 			
-			await SetData(`token:${newToken}`, JSON.stringify({
+			await SetData_ByKey(`token:${newToken}`, JSON.stringify({
 				userID: user.userID,
 				token: newToken
 			}), 86400);
@@ -113,7 +114,7 @@ export const DoLogin = async (req: Request, res: Response) => {
 };
 
 const ValidateCredentials = async (username: string, password: string) => {
-	const user = await GetData<UserAuthentication>(`user:${username}`);
+	const user = await GetData_ByKey<UserAuthentication>(`user:${username}`);
 	
 	// If user does not exist
 	if (!user) {
@@ -131,7 +132,7 @@ const ValidateCredentials = async (username: string, password: string) => {
 export const CheckUsername = async (req: Request, res: Response) => {
 	const username: string = req.body.username;
 	
-	const user = await GetData<UserAuthentication>(`user:${username}`);
+	const user = await GetData_ByKey<UserAuthentication>(`user:${username}`);
 	
 	if (user) {
 		SendResponse(res, {
@@ -153,7 +154,7 @@ export const CreateUser = async (req: Request, res: Response) => {
 		});
 	} else {
 		// Double check if the username already exists
-		const existingUser = await GetData<UserAuthentication>(`user:${username}`);
+		const existingUser = await GetData_ByKey<UserAuthentication>(`user:${username}`);
 		
 		if (existingUser) {
 			SendResponse(res, {
@@ -169,21 +170,21 @@ export const CreateUser = async (req: Request, res: Response) => {
 			const userID = randomUUID();
 			const newToken = randomUUID();
 			
-			await SetData(`user:${username}`, JSON.stringify({
+			await SetData_ByKey(`user:${username}`, JSON.stringify({
 				username,
 				password: hashedPassword,
 				userID: userID
 			}), 86400);
 			
-			await SetData(`userDetails:${userID}`, JSON.stringify({
+			await SetData_ByKey(`userDetails:${userID}`, JSON.stringify({
 				userID: userID,
 				firstName,
 				lastName
 			}), 86400);
 			
-			await SetData(`token:${newToken}`, JSON.stringify({
+			await SetData_ByKey(`token:${newToken}`, JSON.stringify({
 				userID: userID,
-				token: randomUUID()
+				token: newToken
 			}), 86400);
 			
 			res.cookie('authToken', newToken, {
@@ -208,5 +209,5 @@ export const CreateUser = async (req: Request, res: Response) => {
 }
 
 export const GetUser = async (userID: string) => {
-	return await GetData<UserDetails>(`userDetails:${userID}`);
+	return await GetData_ByKey<UserDetails>(`userDetails:${userID}`);
 }

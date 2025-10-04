@@ -10,3 +10,6 @@
 # Build files
 /client/dist
 /server/dist
+
+# Misc
+TODO.md
