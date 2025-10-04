@@ -26,7 +26,6 @@ export const EventView = () => {
 			if (result?.errorCode) {
 				handleGetEventError();
 			} else if (result?.data?.event) {
-				console.log('Data from request', result.data);
 				setEvent(result.data.event);
 				setEventSignees(result.data.signups || []);
 				setEventUsers(result.data.users || {});
@@ -57,6 +56,7 @@ export const EventView = () => {
 				<div className="fc g5 w100 vertCenter">
 					<div>{ event?.name }</div>
 					<div>Scan the QR to sign up for this event!</div>
+					<button onClick={ () => navigator.clipboard.writeText(eventID) }>Delete Event</button>
 					<QRCode value={ eventID } />
 				</div>
 				<div className="fc g5 w100 vertCenter">

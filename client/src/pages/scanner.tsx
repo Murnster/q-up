@@ -10,10 +10,7 @@ export const QRScanner = () => {
 	const [scanQRWarning, setScanQRWarning] = useState('');
 	
 	const handleScan = (result: IDetectedBarcode[]) => {
-		console.log('Scanned!');
-		
 		result?.forEach((barcode) => {
-			console.log(barcode.rawValue);
 			if (barcode.rawValue) {
 				fetchSignupWithEventID(barcode.rawValue);
 			}
@@ -32,8 +29,7 @@ export const QRScanner = () => {
 			if (result?.errorCode) {
 				handleQRScanError();
 			} else if (result?.data?.done) {
-				console.log(result.data);
-				// Successfully signed up
+				// TODO: Handle successful scan (e.g., show a message)
 				goToHome();
 			}
 		}

@@ -20,7 +20,6 @@ export const EventManager = () => {
 			if (result?.errorCode) {
 				handleGetEventsError();
 			} else if (result?.data?.events) {
-				console.log(result.data);
 				setActiveEvents(result.data.events);
 			}
 		}

@@ -19,6 +19,7 @@ export const ConnectToDB = async () => {
 	}
 	
 	if (!client.isOpen) {
+		// TODO: Fix logging
 		console.log('Connecting to Redis...');
 		await client.connect();
 		console.log('Connected to Redis!');
