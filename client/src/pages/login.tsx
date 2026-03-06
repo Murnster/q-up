@@ -9,7 +9,7 @@ export const Login = () => {
 	const [password, setPassword] = useState('');
 	const [username, setUsername] = useState('');
 	const { setUser } = useCredentials();
-	const { fetchData } = useFetch<UserDetails>();
+	const { fetchData, loading } = useFetch<UserDetails>();
 	const { goToHome } = useAppNavigation();
 	
 	const doLogin = async () => {
@@ -26,7 +26,6 @@ export const Login = () => {
 		if (result != null) {
 			if (result?.errorCode) {
 				// TODO: Error handling
-				// handleCreateUserError(result.errorCode);
 			} else if (result?.data) {
 				setUser(result.data);
 				goToHome();
@@ -38,8 +37,8 @@ export const Login = () => {
 		<>
 			<div className="fc g5 p10">
 				<TextInput label={ "Username" } value={ username } onChange={ setUsername }></TextInput>
-				<TextInput label={ "Password" } value={ password } onChange={ setPassword }></TextInput>
-				<button onClick={ doLogin }>Login</button>
+				<TextInput label={ "Password" } value={ password } onChange={ setPassword } type="password"></TextInput>
+				<button onClick={ doLogin } disabled={ loading }>{ loading ? 'Logging in...' : 'Login' }</button>
 			</div>
 		</>
 	);

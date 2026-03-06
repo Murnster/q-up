@@ -15,8 +15,8 @@ export interface EventDetails {
 	createdBy: string;
 	name: string
 	description: string;
-	startTime: string;
-	endTime: string;
+	startTime: number;
+	endTime: number;
 }
 
 export interface GetEventsPayload {

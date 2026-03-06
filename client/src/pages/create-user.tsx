@@ -12,7 +12,7 @@ export const CreateUser = () => {
 	const [lastName, setLastName] = useState('');
 	const { setUser } = useCredentials();
 	const [userNameWarning, setUserNameWarning] = useState('');
-	const { fetchData } = useFetch<UserDetails>();
+	const { fetchData, loading } = useFetch<UserDetails>();
 	const { goToHome } = useAppNavigation();
 	
 	const createUser = async () => {
@@ -49,10 +49,10 @@ export const CreateUser = () => {
 			<div className="fc g5 p10">
 				<div className={ `textWarning ${!userNameWarning ? '' : 'hidden'}` }>{ userNameWarning }</div>
 				<TextInput label={ "Username" } value={ username } onChange={ setUsername }></TextInput>
-				<TextInput label={ "Password" } value={ password } onChange={ setPassword }></TextInput>
+				<TextInput label={ "Password" } value={ password } onChange={ setPassword } type="password"></TextInput>
 				<TextInput label={ "First Name" } value={ firstName } onChange={ setFirstName }></TextInput>
 				<TextInput label={ "Last Name" } value={ lastName } onChange={ setLastName }></TextInput>
-				<button onClick={ createUser }>Create User</button>
+				<button onClick={ createUser } disabled={ loading }>{ loading ? 'Creating...' : 'Create User' }</button>
 			</div>
 		</>
 	);

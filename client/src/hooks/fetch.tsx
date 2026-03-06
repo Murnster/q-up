@@ -3,8 +3,10 @@ import { ResponsePayload } from "../constants/interfaces";
 
 export function useFetch<T>() {
 	const [payload, setPayload] = useState<ResponsePayload<T> | null>(null);
+	const [loading, setLoading] = useState(false);
 	
 	const fetchData = useCallback(async (url: string, options?: RequestInit) => {
+		setLoading(true);
 		try {
 			const response = await fetch(`http://localhost:3000${url}`, options);
 			
@@ -17,8 +19,10 @@ export function useFetch<T>() {
 		} catch {
 			setPayload(null);
 			return null;
+		} finally {
+			setLoading(false);
 		}
 	}, []);
-
-	return { payload, fetchData };
+	
+	return { payload, fetchData, loading };
 }

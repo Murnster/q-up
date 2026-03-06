@@ -1,4 +1,5 @@
 import { useAppNavigation } from "../hooks/navigation";
+import { useCredentials } from "../hooks/use-crendentials";
 import { Button } from "./button";
 
 interface NavBarProps {
@@ -6,7 +7,13 @@ interface NavBarProps {
 }
 
 export const NavBar = ({ title }: NavBarProps) => {
-	const { goBack } = useAppNavigation();
+	const { goBack, goToLogin, goToUserCreation } = useAppNavigation();
+	const { user, setUser } = useCredentials();
+	
+	const handleLogout = () => {
+		setUser(null);
+		goToLogin();
+	};
 	
 	return (
 		<div className="navbar fr">
@@ -14,8 +21,15 @@ export const NavBar = ({ title }: NavBarProps) => {
 				<Button label="Back" clickHandler={ goBack } />
 				<h1>{ title }</h1>
 			</div>
-			<div className="navbarActions">
-				<Button label="Button" clickHandler={ () => console.log('Hiya') } />
+			<div className="navbarActions fr g5">
+				{ user ? (
+					<Button label="Logout" clickHandler={ handleLogout } />
+				) : (
+					<>
+						<Button label="Login" clickHandler={ goToLogin } />
+						<Button label="Sign Up" clickHandler={ goToUserCreation } />
+					</>
+				) }
 			</div>
 		</div>
 	);

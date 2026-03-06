@@ -4,9 +4,10 @@ interface TextInputProps {
 	label: string;
 	value: string;
 	onChange: (value: string) => void;
+	type?: string;
 }
 
-export const TextInput = ({ label, value, onChange }: TextInputProps) => {
+export const TextInput = ({ label, value, onChange, type = "text" }: TextInputProps) => {
 	const inputChange = (e: ChangeEvent<HTMLInputElement>) => {
 		onChange((e.target.value));
 	};
@@ -14,7 +15,7 @@ export const TextInput = ({ label, value, onChange }: TextInputProps) => {
 	return (
 		<div className="fc input-wrapper g5">
 			{ label && <label>{ label }</label> }
-			<input type="text" value={ value } onChange={ inputChange }></input>
+			<input type={ type } value={ value } onChange={ inputChange }></input>
 		</div>
 	);
 };

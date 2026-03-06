@@ -213,6 +213,16 @@ export const RegisterForEvent = async (req: Request, res: Response) => {
 		return;
 	}
 	
+	if (Date.now() > Number(existingEvent.endTime)) {
+		SendResponse(res, {
+			status: ServerCodes.BAD_REQUEST,
+			payload: {
+				message: 'This event has ended'
+			}
+		});
+		return;
+	}
+	
 	const signup: EventSignup = {
 		signupID: randomUUID(),
 		eventID,

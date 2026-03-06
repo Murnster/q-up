@@ -6,7 +6,7 @@ import { useAppNavigation } from "../hooks/navigation";
 export const EventManager = () => {
 	const { goToEventQR } = useAppNavigation();
 	const { fetchData } = useFetch<GetEventsPayload>();
-	const [activeEvents, setActiveEvents] = useState<EventDetails[]>([]);
+	const [events, setEvents] = useState<EventDetails[]>([]);
 	const [getEventsWarning, setGetEventsWarning] = useState('');
 	
 	const fetchEvents = useCallback(async () => {
@@ -20,7 +20,7 @@ export const EventManager = () => {
 			if (result?.errorCode) {
 				handleGetEventsError();
 			} else if (result?.data?.events) {
-				setActiveEvents(result.data.events);
+				setEvents(result.data.events);
 			}
 		}
 	}, [fetchData]);
@@ -32,6 +32,10 @@ export const EventManager = () => {
 	useEffect(() => {
 		fetchEvents();
 	}, [fetchEvents]);
+	
+	const now = Date.now();
+	const activeEvents = events.filter(e => e.endTime > now);
+	const endedEvents = events.filter(e => e.endTime <= now);
 	
 	return (
 		<>
@@ -49,6 +53,23 @@ export const EventManager = () => {
 					})
 				}
 			</div>
+			{ endedEvents.length > 0 && (
+				<>
+					<div style={{ color: '#999', marginTop: '20px' }}>Ended Events</div>
+					<div className="fc g5 p10" style={{ opacity: 0.6 }}>
+						{
+							endedEvents.map((event) => {
+								return (
+									<div key={ event.eventID } onClick={ () => goToEventQR(event.eventID) } className="fc g5">
+										<div data-eventid={ event.eventID }>{ event.name }</div>
+										<div>{ event.description }</div>
+									</div>
+								);
+							})
+						}
+					</div>
+				</>
+			) }
 		</>
 	);
 };

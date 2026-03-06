@@ -1,15 +1,15 @@
-
 import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useFetch } from "../hooks/fetch";
 import { useAppNavigation } from "../hooks/navigation";
 
 export const QRScanner = () => {
 	const { goToHome } = useAppNavigation();
-	const { fetchData } = useFetch<{ done: 1 }>();
+	const { fetchData, loading } = useFetch<{ done: 1 }>();
 	const [scanQRWarning, setScanQRWarning] = useState('');
 	
 	const handleScan = (result: IDetectedBarcode[]) => {
+		if (loading) return;
 		result?.forEach((barcode) => {
 			if (barcode.rawValue) {
 				fetchSignupWithEventID(barcode.rawValue);
@@ -29,7 +29,6 @@ export const QRScanner = () => {
 			if (result?.errorCode) {
 				handleQRScanError();
 			} else if (result?.data?.done) {
-				// TODO: Handle successful scan (e.g., show a message)
 				goToHome();
 			}
 		}
@@ -39,26 +38,13 @@ export const QRScanner = () => {
 		setScanQRWarning('Failed to scan event. Please try again later.');
 	};
 	
-	useEffect(() => {
-		// For testing purposes, automatically scan a few QR codes
-		// In a real application, the user would scan QR codes manually
-		// Uncomment the lines below to simulate scanning QR codes
-		
-		const simulateScans = async () => {
-			await new Promise(res => setTimeout(res, 2000));
-			await fetchSignupWithEventID('e9e992c5-cc04-485c-8206-187ac9736840');
-		};
-		
-		simulateScans();
-	}, [fetchSignupWithEventID]);
-	
 	return (
 		<>
 			<div className="fc g5 w100 vertCenter p10">
 				<div className={ `textWarning ${!scanQRWarning ? 'hidden' : ''}` }>{ scanQRWarning }</div>
-				Scan QR here
+				{ loading ? 'Signing up...' : 'Scan QR here' }
 				<div className="qr-wrapper w100 fr vertCenter">
-					<Scanner styles={{ container: { "border": "20px solid black" } }} onScan={ (result) => handleScan(result) } />
+					{ !loading && <Scanner styles={{ container: { "border": "20px solid black" } }} onScan={ (result) => handleScan(result) } /> }
 				</div>
 			</div>
 		</>

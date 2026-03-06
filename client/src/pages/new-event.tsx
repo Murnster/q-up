@@ -11,7 +11,7 @@ export const EventCreation = () => {
 	const [eventDescription, setEventDescription] = useState('');
 	const [eventWarning, setEventWarning] = useState('');
 	const [eventHours, setEventHours] = useState(0);
-	const { fetchData } = useFetch<EventDetails>();
+	const { fetchData, loading } = useFetch<EventDetails>();
 	const { goToEvents } = useAppNavigation();
 	
 	const createEvent = () => {
@@ -73,7 +73,7 @@ export const EventCreation = () => {
 				<TextInput label="Event Name" value={ eventName } onChange={ setEventName }></TextInput>
 				<TextInput label="Event Description" value={ eventDescription } onChange={ setEventDescription }></TextInput>
 				<NumInput label="Event Hours" value={ eventHours } onChange={ setEventHours }></NumInput>
-				<Button label="Create Event" clickHandler={ createEvent }></Button>
+				<Button label={ loading ? 'Creating...' : 'Create Event' } clickHandler={ createEvent }></Button>
 			</div>
 		</>
 	);
