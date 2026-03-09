@@ -19,7 +19,7 @@ import { EventView } from './pages/view-event';
 
 function App() {
 	const { user, setUser } = useCredentials();
-	const { payload, fetchData } = useFetch<UserDetails>();
+	const { fetchData } = useFetch<UserDetails>();
 	const { fetchData: fetchEventsData } = useFetch<GetEventsPayload>();
 	const [sessionChecked, setSessionChecked] = useState(false);
 	const [activeEventsCount, setActiveEventsCount] = useState(0);
@@ -28,25 +28,21 @@ function App() {
 
 	useEffect(() => {
 		const checkSession = async () => {
-			await fetchData('/session', {
+			const result = await fetchData('/session', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
 			});
+
+			if (result?.data?.userID) {
+				setUser(result.data);
+			}
+
+			setSessionChecked(true);
 		};
 
 		checkSession();
-	}, [fetchData]);
-
-	useEffect(() => {
-		if (payload?.data?.userID) {
-			setUser(payload.data);
-		}
-
-		if (payload) {
-			setSessionChecked(true);
-		}
-	}, [payload, setUser]);
+	}, [fetchData, setUser]);
 
 	useEffect(() => {
 		if (!user) {

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import { useParams } from "react-router-dom";
 import { Button } from "../components/button";
+import { EmptyState } from "../components/empty-state";
 import { Skeleton } from "../components/skeleton";
 import {
 	EventDetails,
@@ -125,7 +126,18 @@ export const EventView = () => {
 							Attendees ({ eventSignees.length })
 						</div>
 						{ eventSignees.length === 0 && (
-							<div className="attendee-list__empty">No attendees yet</div>
+							<EmptyState
+								icon={
+									<svg width="72" height="72" viewBox="0 0 24 24" fill="none">
+										<circle cx="9" cy="7" r="3" stroke="currentColor" strokeWidth="1.5" />
+										<path d="M2 19c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+										<path d="M19 11c1.7 0 3 1.3 3 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+										<circle cx="17" cy="7" r="2" stroke="currentColor" strokeWidth="1.5" />
+									</svg>
+								}
+								heading="No attendees yet"
+								subtext="Share the QR code to start signing people up"
+							/>
 						) }
 						{ eventSignees.map((signee) => (
 							<div key={ signee.signupID } className="attendee-list__row">
