@@ -1,16 +1,25 @@
-import { Button } from "../components/button";
 import { useAppNavigation } from "../hooks/navigation";
 
 export const Home = () => {
 	const { goToEvents, goToNewEvent, goToScanner } = useAppNavigation();
-	
+
 	return (
-		<>
-			<div className="fc g5 p10">
-				<Button label="Start an Event" clickHandler={ goToNewEvent } />
-				<Button label="Manage Events" clickHandler={ goToEvents } />
-				<Button label="Scan QR" clickHandler={ goToScanner } />
+		<div className="dashboard">
+			<h2>Dashboard</h2>
+			<div className="dashboard-grid">
+				<div className="dashboard-action" onClick={ goToNewEvent }>
+					<span className="dashboard-action__title">Start an Event</span>
+					<span className="dashboard-action__subtitle">Create a new QR code event</span>
+				</div>
+				<div className="dashboard-action" onClick={ goToEvents }>
+					<span className="dashboard-action__title">Manage Events</span>
+					<span className="dashboard-action__subtitle">View and manage your events</span>
+				</div>
+				<div className="dashboard-action" onClick={ goToScanner }>
+					<span className="dashboard-action__title">Scan QR</span>
+					<span className="dashboard-action__subtitle">Sign up for an event</span>
+				</div>
 			</div>
-		</>
+		</div>
 	);
 };

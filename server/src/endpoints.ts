@@ -13,7 +13,7 @@ export const endpoints = (app: express.Application) => {
 	app.post('/create-user', asyncHandler(auth.CreateUser));
 	
 	// Events
-	app.get('/get-events', authHandler(events.GetEvents));
+	app.get('/get-events', authHandler(events.GetAllEventsWithSignups));
 	app.post('/create-event', authHandler(events.CreateEvent));
 	app.post('/delete-event', authHandler(events.DeleteEvent));
 	app.post('/get-event-details', authHandler(events.GetEventWithSignups));

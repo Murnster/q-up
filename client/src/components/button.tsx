@@ -1,12 +1,14 @@
 interface ButtonProps {
 	label: string;
 	clickHandler: () => void | Promise<void>;
+	variant?: 'primary' | 'danger' | 'ghost';
+	disabled?: boolean;
 }
 
-export const Button = ({ label, clickHandler }: ButtonProps) => {
+export const Button = ({ label, clickHandler, variant = 'primary', disabled }: ButtonProps) => {
 	return (
-		<div>
-			<button className="p10 m5" onClick={ clickHandler }>{ label }</button>
-		</div>
+		<button className={ `btn btn--${variant}` } onClick={ clickHandler } disabled={ disabled }>
+			{ label }
+		</button>
 	);
 };

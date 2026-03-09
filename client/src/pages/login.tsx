@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { Button } from "../components/button";
 import { TextInput } from "../components/text-input";
 import { UserDetails } from "../constants/interfaces";
 import { useFetch } from "../hooks/fetch";
 import { useAppNavigation } from "../hooks/navigation";
 import { useCredentials } from "../hooks/use-crendentials";
+import { useToast } from "../hooks/use-toast";
 
 export const Login = () => {
 	const [password, setPassword] = useState('');
@@ -11,7 +13,8 @@ export const Login = () => {
 	const { setUser } = useCredentials();
 	const { fetchData, loading } = useFetch<UserDetails>();
 	const { goToHome } = useAppNavigation();
-	
+	const { addToast } = useToast();
+
 	const doLogin = async () => {
 		const result = await fetchData('/login', {
 			method: 'POST',
@@ -22,24 +25,25 @@ export const Login = () => {
 				password
 			})
 		});
-		
+
 		if (result != null) {
 			if (result?.errorCode) {
-				// TODO: Error handling
+				addToast('Invalid username or password.', 'error');
 			} else if (result?.data) {
 				setUser(result.data);
 				goToHome();
 			}
 		}
 	};
-	
+
 	return (
-		<>
-			<div className="fc g5 p10">
-				<TextInput label={ "Username" } value={ username } onChange={ setUsername }></TextInput>
-				<TextInput label={ "Password" } value={ password } onChange={ setPassword } type="password"></TextInput>
-				<button onClick={ doLogin } disabled={ loading }>{ loading ? 'Logging in...' : 'Login' }</button>
+		<div className="auth-page">
+			<div className="auth-card">
+				<h2>Login</h2>
+				<TextInput label="Username" value={ username } onChange={ setUsername } />
+				<TextInput label="Password" value={ password } onChange={ setPassword } type="password" />
+				<Button label={ loading ? 'Logging in...' : 'Login' } clickHandler={ doLogin } disabled={ loading } />
 			</div>
-		</>
+		</div>
 	);
 };

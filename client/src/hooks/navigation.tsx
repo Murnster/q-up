@@ -16,6 +16,6 @@ export const useAppNavigation = () => {
 		goToUserCreation: () => navigate(AppRoutes.USER_CREATION),
 		goToScanner: () => navigate(AppRoutes.SCANNER),
 		goToEventQR: (eventID: string) => navigate(routeHelper(AppRoutes.EVENT_QR, eventID)),
-		goBack: () => navigate(-1) // TODO: Fix the back button to go back to parent page, not actually history
+		goToProfile: () => navigate(AppRoutes.PROFILE),
 	};
 };

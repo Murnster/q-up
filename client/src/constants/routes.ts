@@ -6,7 +6,8 @@ export const AppRoutes = {
 	SCANNER: '/scanner',
 	EVENT_QR: '/event/:eventID',
 	USER_CREATION: '/create-user',
-	NOT_FOUND: '*'
+	NOT_FOUND: '*',
+	PROFILE: '/profile'
 } as const;
 
 export type AppRouteKeys = keyof typeof AppRoutes;

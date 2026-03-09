@@ -11,11 +11,11 @@ export const TextInput = ({ label, value, onChange, type = "text" }: TextInputPr
 	const inputChange = (e: ChangeEvent<HTMLInputElement>) => {
 		onChange((e.target.value));
 	};
-	
+
 	return (
-		<div className="fc input-wrapper g5">
+		<div className="input-wrapper">
 			{ label && <label>{ label }</label> }
-			<input type={ type } value={ value } onChange={ inputChange }></input>
+			<input type={ type } value={ value } onChange={ inputChange } />
 		</div>
 	);
 };
