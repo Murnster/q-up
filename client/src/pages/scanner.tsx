@@ -1,5 +1,5 @@
-import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
-import { useCallback, useState } from "react";
+import jsQR from "jsqr";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFetch } from "../hooks/fetch";
 import { useAppNavigation } from "../hooks/navigation";
 import { useToast } from "../hooks/use-toast";
@@ -10,23 +10,41 @@ export const QRScanner = () => {
 	const { addToast } = useToast();
 	const [scanSuccess, setScanSuccess] = useState(false);
 	const [permissionDenied, setPermissionDenied] = useState(false);
+	const [scannerError, setScannerError] = useState<string | null>(null);
+	const scanInFlight = useRef(false);
+	const videoRef = useRef<HTMLVideoElement | null>(null);
+	const streamRef = useRef<MediaStream | null>(null);
+	const animFrameRef = useRef<number | null>(null);
 
-	const handleError = (error: unknown) => {
-		if (error instanceof DOMException && (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError')) {
-			setPermissionDenied(true);
+	const parseEventID = (rawValue?: string) => {
+		if (!rawValue) {
+			return null;
+		}
+
+		try {
+			const url = new URL(rawValue);
+			const matches = url.pathname.match(/^\/event\/([^/]+)$/);
+			return matches?.[1] ?? null;
+		} catch {
+			return rawValue;
 		}
 	};
 
-	const handleScan = (result: IDetectedBarcode[]) => {
-		if (loading || scanSuccess) {
-			return;
+	const stopScanner = useCallback(() => {
+		if (animFrameRef.current != null) {
+			cancelAnimationFrame(animFrameRef.current);
+			animFrameRef.current = null;
 		}
-		result?.forEach((barcode) => {
-			if (barcode.rawValue) {
-				fetchSignupWithEventID(barcode.rawValue);
-			}
-		});
-	};
+
+		if (streamRef.current) {
+			streamRef.current.getTracks().forEach(t => t.stop());
+			streamRef.current = null;
+		}
+
+		if (videoRef.current) {
+			videoRef.current.srcObject = null;
+		}
+	}, []);
 
 	const fetchSignupWithEventID = useCallback(async (eventID: string) => {
 		const result = await fetchData('/register-event-signup', {
@@ -45,9 +63,112 @@ export const QRScanner = () => {
 				setTimeout(() => {
 					goToHome();
 				}, 1500);
+				return;
 			}
 		}
+
+		scanInFlight.current = false;
 	}, [fetchData, goToHome, addToast]);
+
+	useEffect(() => {
+		if (scanSuccess) {
+			stopScanner();
+			return;
+		}
+
+		let cancelled = false;
+		const video = videoRef.current;
+		if (!video) {
+			return;
+		}
+
+		const canvas = document.createElement('canvas');
+		const ctx = canvas.getContext('2d', { willReadFrequently: true });
+		if (!ctx) {
+			setScannerError('Unable to initialize QR scanner.');
+			return;
+		}
+
+		const scanFrame = () => {
+			if (cancelled || video.readyState !== video.HAVE_ENOUGH_DATA) {
+				animFrameRef.current = requestAnimationFrame(scanFrame);
+				return;
+			}
+
+			canvas.width = video.videoWidth;
+			canvas.height = video.videoHeight;
+			ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+			const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+			const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+			if (code && !scanInFlight.current && !loading) {
+				const eventID = parseEventID(code.data);
+				if (eventID) {
+					scanInFlight.current = true;
+					stopScanner();
+					void fetchSignupWithEventID(eventID);
+					return;
+				}
+			}
+
+			animFrameRef.current = requestAnimationFrame(scanFrame);
+		};
+
+		const startCamera = async () => {
+			setPermissionDenied(false);
+			setScannerError(null);
+
+			const tryStart = async (constraints: MediaTrackConstraints) => {
+				const stream = await navigator.mediaDevices.getUserMedia({ video: constraints, audio: false });
+				if (cancelled) {
+					stream.getTracks().forEach(t => t.stop());
+					return;
+				}
+				streamRef.current = stream;
+				video.srcObject = stream;
+				await video.play();
+				animFrameRef.current = requestAnimationFrame(scanFrame);
+			};
+
+			try {
+				await tryStart({ facingMode: { exact: 'environment' } });
+			} catch (error) {
+				if (cancelled) {
+					return;
+				}
+
+				const message = error instanceof Error ? error.message : String(error);
+				if (/permission|notallowed|denied/i.test(message)) {
+					setPermissionDenied(true);
+					return;
+				}
+
+				try {
+					await tryStart({ facingMode: 'environment' });
+				} catch (fallbackError) {
+					if (cancelled) {
+						return;
+					}
+
+					const fallbackMessage = fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
+					if (/permission|notallowed|denied/i.test(fallbackMessage)) {
+						setPermissionDenied(true);
+						return;
+					}
+
+					setScannerError('Unable to start the QR scanner on this device.');
+					console.error('Scanner error:', fallbackError);
+				}
+			}
+		};
+
+		void startCamera();
+
+		return () => {
+			cancelled = true;
+			stopScanner();
+		};
+	}, [fetchSignupWithEventID, loading, scanSuccess, stopScanner]);
 
 	return (
 		<div className="scanner-page">
@@ -71,11 +192,17 @@ export const QRScanner = () => {
 							<p>Camera access was denied.</p>
 							<p>Please allow camera permission in your browser settings and reload the page.</p>
 						</div>
+					) : scannerError ? (
+						<div className="scanner-permission-denied">
+							<p>{ scannerError }</p>
+						</div>
 					) : (
 						<>
 							<span className="scanner-status">{ loading ? 'Signing up...' : 'Point your camera at an event QR code' }</span>
 							<div className="scanner-wrapper">
-								{ !loading && <Scanner onScan={ (result) => handleScan(result) } onError={ handleError } /> }
+								<div className="scanner-region">
+									<video ref={ videoRef } muted playsInline />
+								</div>
 							</div>
 						</>
 					) }
