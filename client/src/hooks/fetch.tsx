@@ -10,7 +10,7 @@ export function useFetch<T>() {
 	const fetchData = useCallback(async (url: string, options?: RequestInit) => {
 		setLoading(true);
 		try {
-			const response = await fetch(`http://localhost:3000${url}`, options);
+			const response = await fetch(`${url}`, options);
 
 			if (response.status === 401) {
 				setUser(null);

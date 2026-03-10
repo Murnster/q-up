@@ -6,13 +6,26 @@ import cors from 'cors';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import path from 'path';
 import { endpoints } from './endpoints.js';
 
 
 const app = express();
 
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+	contentSecurityPolicy: process.env.PRODUCTION === 'true' ? {
+		directives: {
+			defaultSrc: ["'self'"],
+			scriptSrc: ["'self'"],
+			styleSrc: ["'self'", "'unsafe-inline'"],
+			imgSrc: ["'self'", "data:"],
+			connectSrc: ["'self'"],
+			fontSrc: ["'self'", "https://fonts.gstatic.com"],
+			styleSrcElem: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+		}
+	} : false,
+}));
 app.use(cors({
 	origin: process.env.ORIGINS?.split(',') || ['http://localhost:3000'],
 	credentials: true,
@@ -34,6 +47,15 @@ app.use(cookieParser());
 
 // Init endpoints
 endpoints(app);
+
+// Static file serving + SPA fallback (production only)
+if (process.env.PRODUCTION === 'true') {
+	const clientDistPath = path.resolve('client/dist');
+	app.use(express.static(clientDistPath));
+	app.get('*', (_req: express.Request, res: express.Response) => {
+		res.sendFile(path.join(clientDistPath, 'index.html'));
+	});
+}
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response) => {

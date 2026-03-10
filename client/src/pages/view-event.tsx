@@ -142,7 +142,7 @@ export const EventView = () => {
 			return;
 		}
 
-		const es = new EventSource(`http://localhost:3000/events/${eventID}/stream`, {
+		const es = new EventSource(`/events/${eventID}/stream`, {
 			withCredentials: true,
 		});
 
