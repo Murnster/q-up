@@ -11,6 +11,7 @@ export const endpoints = (app: express.Application) => {
 	app.post('/login', asyncHandler(auth.DoLogin));
 	app.post('/session', asyncHandler(auth.CheckSession));
 	app.post('/create-user', asyncHandler(auth.CreateUser));
+	app.post('/logout', asyncHandler(auth.DoLogout));
 	
 	// Events
 	app.get('/get-events', authHandler(events.GetAllEventsWithSignups));
@@ -18,6 +19,7 @@ export const endpoints = (app: express.Application) => {
 	app.post('/delete-event', authHandler(events.DeleteEvent));
 	app.post('/get-event-details', authHandler(events.GetEventWithSignups));
 	app.post('/register-event-signup', authHandler(events.RegisterForEvent));
+	app.post('/remove-attendee', authHandler(events.RemoveAttendee));
 };
 
 const authHandler = (handler: (req: express.Request, res: express.Response) => Promise<void>) => {

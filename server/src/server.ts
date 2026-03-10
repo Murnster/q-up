@@ -73,7 +73,7 @@ process.on('unhandledRejection', (reason: any) => {
 const port = process.env.PORT || 3000;
 
 const server = app.listen(port, () => {
-	console.info(`Murney Events running on port: ${port}`);
+	console.info(`Q-up running on port: ${port}`);
 	
 	if (process.env.REDIS_HOST == null || process.env.REDIS_PORT == null) {
 		console.info('There is missing Redis configuration. Please check your environment variables.');

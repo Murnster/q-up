@@ -432,6 +432,7 @@ a:hover {
    ======================================== */
 
 .event-card {
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 	gap: var(--space-xs);
@@ -465,7 +466,7 @@ a:hover {
 	display: flex;
 	align-items: center;
 	gap: var(--space-md);
-	margin-top: var(--space-xs);
+	margin-top: auto;
 	font-size: var(--font-size-xs);
 }
 
@@ -551,6 +552,18 @@ a:hover {
 
 .dashboard h2 {
 	font-size: var(--font-size-2xl);
+}
+
+.dashboard-blurb {
+	color: var(--text-secondary);
+	font-size: var(--font-size-md);
+	max-width: 640px;
+	text-align: center;
+	line-height: 1.5;
+}
+
+.dashboard-blurb + .dashboard-blurb {
+	margin-top: -20px;
 }
 
 .dashboard-grid {
@@ -885,11 +898,61 @@ a:hover {
 	color: var(--color-text-secondary);
 }
 
+.attendee-list__search {
+	padding: var(--space-sm) var(--space-lg);
+	border-bottom: 1px solid var(--color-border);
+}
+
+.attendee-list__search-input {
+	width: 100%;
+	padding: var(--space-sm) var(--space-md);
+	font-family: var(--font-family);
+	font-size: var(--font-size-sm);
+	color: var(--color-text-primary);
+	background: var(--color-bg-input);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	outline: none;
+	transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.attendee-list__search-input:focus {
+	border-color: var(--color-border-focus);
+	box-shadow: 0 0 0 3px var(--color-accent-dim);
+}
+
+.attendee-list__search-input::placeholder {
+	color: var(--color-text-secondary);
+}
+
+.attendee-list__info {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
 .attendee-list__empty {
 	padding: var(--space-lg);
 	text-align: center;
 	color: var(--color-text-secondary);
 	font-size: var(--font-size-sm);
+}
+
+.btn--small {
+	padding: var(--space-xs) var(--space-sm);
+	font-size: var(--font-size-xs);
+}
+
+.btn--ghost-danger {
+	color: var(--color-danger);
+	border-color: transparent;
+}
+
+.btn--ghost-danger:hover:not(:disabled) {
+	color: var(--color-danger-hover);
+	background: rgba(255, 77, 106, 0.1);
+	border-color: rgba(255, 77, 106, 0.3);
 }
 
 /* ========================================
@@ -1285,6 +1348,70 @@ a:hover {
 }
 
 /* ========================================
+   Confirm Modal
+   ======================================== */
+
+.confirm-modal__backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 300;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.6);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+	animation: modal-backdrop-in var(--transition-fast) ease;
+}
+
+.confirm-modal {
+	width: 90%;
+	max-width: 400px;
+	padding: var(--space-xl);
+	background: var(--color-bg-secondary);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+	animation: modal-card-in var(--transition-normal) ease;
+}
+
+.confirm-modal__title {
+	margin: 0 0 var(--space-sm);
+	font-size: var(--font-size-lg);
+	font-weight: var(--font-weight-semibold);
+	color: var(--color-text-heading);
+}
+
+.confirm-modal__message {
+	margin: 0 0 var(--space-xl);
+	font-size: var(--font-size-sm);
+	color: var(--color-text-secondary);
+	line-height: 1.5;
+}
+
+.confirm-modal__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--space-sm);
+}
+
+@keyframes modal-backdrop-in {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@keyframes modal-card-in {
+	from {
+		opacity: 0;
+		transform: scale(0.95) translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+	}
+}
+
+/* ========================================
    Small Mobile (< 480px)
    ======================================== */
 
@@ -1316,7 +1443,7 @@ a:hover {
 	}
 
 	.btn {
-		padding: var(--space-xs) var(--space-sm);
+		padding: var(--space-sm) var(--space-sm);
 		font-size: var(--font-size-xs);
 	}
 
@@ -1545,7 +1672,9 @@ a:hover {
 	.text-warning,
 	.status-badge,
 	.print-btn,
-	.toast-container {
+	.toast-container,
+	.attendee-list__search,
+	.confirm-modal__backdrop {
 		display: none !important;
 	}
 

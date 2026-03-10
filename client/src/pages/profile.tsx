@@ -6,7 +6,11 @@ export const Profile = () => {
 	const { user, setUser } = useCredentials();
 	const { goToLogin } = useAppNavigation();
 
-	const handleLogout = () => {
+	const handleLogout = async () => {
+		await fetch('http://localhost:3000/logout', {
+			method: 'POST',
+			credentials: 'include'
+		});
 		setUser(null);
 		goToLogin();
 	};

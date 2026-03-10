@@ -141,7 +141,7 @@ export const GetDataByPattern = async <T>(pattern: string) => {
 
 export const DeleteData_ByKey = async (key: string) => {
 	await ConnectToDB();
-	
+
 	try {
 		await client.del(key);
 	} catch (error) {
@@ -149,3 +149,12 @@ export const DeleteData_ByKey = async (key: string) => {
 		return null;
 	}
 }
+
+export const DeleteData_ByHashField = async (hashKey: string, field: string) => {
+	await ConnectToDB();
+	try {
+		await client.hDel(hashKey, field);
+	} catch (error) {
+		console.error('Error deleting hash field from Redis:', error);
+	}
+};

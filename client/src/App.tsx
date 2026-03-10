@@ -13,8 +13,8 @@ import { Home } from './pages/home';
 import { Login } from './pages/login';
 import { EventManager } from './pages/manage-events';
 import { EventCreation } from './pages/new-event';
-import { QRScanner } from './pages/scanner';
 import { Profile } from './pages/profile';
+import { QRScanner } from './pages/scanner';
 import { EventView } from './pages/view-event';
 
 function App() {
@@ -58,7 +58,7 @@ function App() {
 			});
 
 			if (result?.data?.events) {
-				setActiveEventsCount(getActiveEventsCount(result.data.events));
+				setActiveEventsCount(getActiveEventsCount(result.data.events, user.userID, result.data.signups));
 				return;
 			}
 
@@ -71,7 +71,7 @@ function App() {
 	if (!sessionChecked) {
 		return (
 			<>
-				<NavBar title="Murney Events"></NavBar>
+				<NavBar title="Q-Up"></NavBar>
 				<div className="app-loading">
 					<div className="spinner"></div>
 				</div>
@@ -82,7 +82,7 @@ function App() {
 	if (!user && !isDev) {
 		return (
 			<>
-				<NavBar title="Murney Events"></NavBar>
+				<NavBar title="Q-Up"></NavBar>
 				<div className="page-transition" key={ location.pathname }>
 					<Routes>
 						<Route path={ AppRoutes.HOME } element={ <About /> } />
@@ -97,7 +97,7 @@ function App() {
 
 	return (
 		<>
-			<NavBar title="Murney Events" activeEventsCount={ activeEventsCount }></NavBar>
+			<NavBar title="Q-Up" activeEventsCount={ activeEventsCount }></NavBar>
 			<div className="page-transition" key={ location.pathname }>
 				<Routes>
 					<Route path={ AppRoutes.HOME } element={ <Home /> } />

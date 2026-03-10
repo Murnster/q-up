@@ -8,9 +8,9 @@ export const About = () => {
 		<div className="landing">
 			<section className="landing-hero">
 				<div className="landing-hero__glow"></div>
-				<h1 className="landing-hero__title">Murney Events</h1>
+				<h1 className="landing-hero__title">Q-Up</h1>
 				<p className="landing-hero__subtitle">
-					Create events, share QR codes, and track attendance in real time.
+					Queue up your events, skip the queue for attendance. One scan is all it takes.
 				</p>
 				<div className="landing-hero__cta">
 					<Button label="Get Started" clickHandler={ goToUserCreation } />
@@ -64,7 +64,7 @@ export const About = () => {
 			</section>
 
 			<section className="landing-cta">
-				<h2>Ready to get started?</h2>
+				<h2>Ready to Q-Up?</h2>
 				<Button label="Create Account" clickHandler={ goToUserCreation } />
 			</section>
 		</div>

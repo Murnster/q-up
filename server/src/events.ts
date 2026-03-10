@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 import { EventDetails, EventSignup, UserDetails } from '../../client/src/constants/interfaces.js';
-import { DeleteData_ByKey, GetAllData_FromHashKey, GetData_ByKey, GetData_ByKeys, GetDataByPattern, SetData_ByHashKey, SetData_ByKey } from './database.js';
+import { DeleteData_ByHashField, DeleteData_ByKey, GetAllData_FromHashKey, GetData_ByKey, GetData_ByKeys, GetDataByPattern, SetData_ByHashKey, SetData_ByKey } from './database.js';
 import { ServerCodes } from './server.js';
 import { SendResponse } from './util.js';
 
@@ -231,8 +231,49 @@ export const RegisterForEvent = async (req: Request, res: Response) => {
 	};
 	
 	await SetData_ByHashKey(`event-signups:${eventID}`, userID, JSON.stringify(signup), Math.floor(((new Date(existingEvent.endTime).getTime() - Date.now()) / 1000)));
-	
+
 	SendResponse(res, {
 		payload: { data: { done: 1, signup } }
+	});
+};
+
+export const RemoveAttendee = async (req: Request, res: Response) => {
+	const { eventID, userID } = req.body;
+
+	if (!eventID || !userID) {
+		SendResponse(res, {
+			status: ServerCodes.BAD_REQUEST,
+			payload: {
+				message: 'Missing eventID or userID'
+			}
+		});
+		return;
+	}
+
+	const existingEvent = await GetData_ByKey<EventDetails>(`event:${eventID}`);
+	if (!existingEvent) {
+		SendResponse(res, {
+			status: ServerCodes.NOT_FOUND,
+			payload: {
+				message: 'No event found with the provided ID'
+			}
+		});
+		return;
+	}
+
+	if (existingEvent.createdBy !== res.locals.user.userID) {
+		SendResponse(res, {
+			status: ServerCodes.FORBIDDEN,
+			payload: {
+				message: 'You do not have permission to remove attendees from this event'
+			}
+		});
+		return;
+	}
+
+	await DeleteData_ByHashField(`event-signups:${eventID}`, userID);
+
+	SendResponse(res, {
+		payload: { data: { done: 1 } }
 	});
 };

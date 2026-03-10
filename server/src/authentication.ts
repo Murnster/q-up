@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 import { CreateUserErrors, UserDetails } from '../../client/src/constants/interfaces.js';
-import { GetData_ByKey, SetData_ByKey } from './database.js';
+import { DeleteData_ByKey, GetData_ByKey, SetData_ByKey } from './database.js';
 import { ServerCodes } from './server.js';
 import { SendResponse } from './util.js';
 
@@ -207,6 +207,26 @@ export const CreateUser = async (req: Request, res: Response) => {
 		}
 	}
 }
+
+export const DoLogout = async (req: Request, res: Response) => {
+	const token: string = req.cookies?.authToken;
+
+	if (token) {
+		await DeleteData_ByKey(`token:${token}`);
+	}
+
+	res.clearCookie('authToken', {
+		httpOnly: true,
+		secure: process.env.PRODUCTION === 'true',
+		sameSite: 'lax'
+	});
+
+	SendResponse(res, {
+		payload: {
+			message: 'Logged out successfully'
+		}
+	});
+};
 
 export const GetUser = async (userID: string) => {
 	return await GetData_ByKey<UserDetails>(`userDetails:${userID}`);

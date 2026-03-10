@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import QRCode from "react-qr-code";
 import { useParams } from "react-router-dom";
 import { Button } from "../components/button";
+import { ConfirmModal } from "../components/confirm-modal";
 import { EmptyState } from "../components/empty-state";
 import { Skeleton } from "../components/skeleton";
 import {
@@ -27,7 +28,31 @@ export const EventView = () => {
 		[userID: string]: UserDetails;
 	}>({});
 	const [hasFetched, setHasFetched] = useState(false);
+	const [searchQuery, setSearchQuery] = useState("");
+	const [confirmModal, setConfirmModal] = useState<{
+		title: string;
+		message: string;
+		confirmLabel: string;
+		variant: "primary" | "danger";
+		onConfirm: () => void;
+	} | null>(null);
 	const deleteFetch = useFetch<{done: 1}>();
+	const removeFetch = useFetch<{done: 1}>();
+
+	const filteredSignees = useMemo(() => {
+		if (!searchQuery.trim()) {
+			return eventSignees;
+		}
+		const query = searchQuery.toLowerCase();
+		return eventSignees.filter((signee) => {
+			const userInfo = eventUsers[signee.userID];
+			if (!userInfo) {
+				return false;
+			}
+			const fullName = `${userInfo.firstName} ${userInfo.lastName}`.toLowerCase();
+			return fullName.includes(query);
+		});
+	}, [eventSignees, eventUsers, searchQuery]);
 
 	const fetchEventDetails = useCallback(async () => {
 		const result = await fetchData("/get-event-details", {
@@ -52,24 +77,56 @@ export const EventView = () => {
 		setHasFetched(true);
 	}, [fetchData, eventID, addToast]);
 
-	const handleDeleteEvent = async () => {
-		if (!window.confirm("Are you sure you want to delete this event?")) {
-			return;
-		}
+	const handleDeleteEvent = () => {
+		setConfirmModal({
+			title: "Delete Event",
+			message: "Are you sure you want to delete this event? This action cannot be undone.",
+			confirmLabel: "Delete",
+			variant: "danger",
+			onConfirm: async () => {
+				setConfirmModal(null);
+				const result = await deleteFetch.fetchData("/delete-event", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					credentials: "include",
+					body: JSON.stringify({ eventID }),
+				});
 
-		const result = await deleteFetch.fetchData("/delete-event", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			credentials: "include",
-			body: JSON.stringify({ eventID }),
+				if (result?.data) {
+					addToast("Event deleted successfully.", "success");
+					goToEvents();
+				} else {
+					addToast("Failed to delete event.", "error");
+				}
+			},
 		});
+	};
 
-		if (result?.data) {
-			addToast("Event deleted successfully.", "success");
-			goToEvents();
-		} else {
-			addToast("Failed to delete event.", "error");
-		}
+	const handleRemoveAttendee = (userID: string) => {
+		const userInfo = eventUsers[userID];
+		const name = userInfo ? `${userInfo.firstName} ${userInfo.lastName}` : "this attendee";
+		setConfirmModal({
+			title: "Remove Attendee",
+			message: `Are you sure you want to remove ${name}?`,
+			confirmLabel: "Remove",
+			variant: "danger",
+			onConfirm: async () => {
+				setConfirmModal(null);
+				const result = await removeFetch.fetchData("/remove-attendee", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					credentials: "include",
+					body: JSON.stringify({ eventID, userID }),
+				});
+
+				if (result?.data) {
+					addToast("Attendee removed successfully.", "success");
+					fetchEventDetails();
+				} else {
+					addToast("Failed to remove attendee.", "error");
+				}
+			},
+		});
 	};
 
 	useEffect(() => {
@@ -90,6 +147,7 @@ export const EventView = () => {
 
 	const isEnded = event ? Date.now() > event.endTime : false;
 	const isCreator = event && user ? event.createdBy === user.userID : false;
+	const isSearching = searchQuery.trim().length > 0;
 
 	return (
 		<div className="event-detail">
@@ -113,18 +171,35 @@ export const EventView = () => {
 			</div>
 			<div className="event-detail__grid">
 				<div className="event-detail__main">
-					{ !isEnded && (
+					{ !isEnded && isCreator && (
 						<div className="qr-display">
 							<QRCode value={ eventID } fgColor="#00e5a0" bgColor="transparent" />
 							<span className="qr-display__hint">Scan to sign up for this event</span>
 						</div>
 					) }
+					{ event?.description && (
+						<p className="event-detail__description">{ event.description }</p>
+					) }
 				</div>
 				<div className="event-detail__aside">
 					<div className="attendee-list" id="attendee-list">
 						<div className="attendee-list__header">
-							Attendees ({ eventSignees.length })
+							{ isSearching
+								? `Attendees (${ filteredSignees.length } / ${ eventSignees.length })`
+								: `Attendees (${ eventSignees.length })`
+							}
 						</div>
+						{ eventSignees.length > 0 && (
+							<div className="attendee-list__search">
+								<input
+									type="text"
+									className="attendee-list__search-input"
+									placeholder="Search attendees..."
+									value={ searchQuery }
+									onChange={ (e) => setSearchQuery(e.target.value) }
+								/>
+							</div>
+						) }
 						{ eventSignees.length === 0 && (
 							<EmptyState
 								icon={
@@ -139,15 +214,30 @@ export const EventView = () => {
 								subtext="Share the QR code to start signing people up"
 							/>
 						) }
-						{ eventSignees.map((signee) => (
+						{ isSearching && filteredSignees.length === 0 && eventSignees.length > 0 && (
+							<div className="attendee-list__empty">
+								No attendees matching "{ searchQuery }"
+							</div>
+						) }
+						{ filteredSignees.map((signee) => (
 							<div key={ signee.signupID } className="attendee-list__row">
-								<span className="attendee-list__name">
-									{ eventUsers[signee.userID]?.firstName }{ " " }
-									{ eventUsers[signee.userID]?.lastName }
-								</span>
-								<span className="attendee-list__time">
-									{ new Date(signee.timestamp).toLocaleString() }
-								</span>
+								<div className="attendee-list__info">
+									<span className="attendee-list__name">
+										{ eventUsers[signee.userID]?.firstName }{ " " }
+										{ eventUsers[signee.userID]?.lastName }
+									</span>
+									<span className="attendee-list__time">
+										{ new Date(signee.timestamp).toLocaleString() }
+									</span>
+								</div>
+								{ isCreator && (
+									<button
+										className="btn btn--ghost btn--small btn--ghost-danger"
+										onClick={ () => handleRemoveAttendee(signee.userID) }
+									>
+										Remove
+									</button>
+								) }
 							</div>
 						)) }
 					</div>
@@ -156,6 +246,15 @@ export const EventView = () => {
 					</button>
 				</div>
 			</div>
+			<ConfirmModal
+				isOpen={ confirmModal !== null }
+				title={ confirmModal?.title ?? "" }
+				message={ confirmModal?.message ?? "" }
+				confirmLabel={ confirmModal?.confirmLabel ?? "Confirm" }
+				variant={ confirmModal?.variant ?? "danger" }
+				onConfirm={ confirmModal?.onConfirm ?? (() => {}) }
+				onCancel={ () => setConfirmModal(null) }
+			/>
 		</div>
 	);
 };
