@@ -19,6 +19,11 @@ export function useFetch<T>() {
 			}
 
 			if (!response.ok) {
+				const errorBody = await response.json();
+				if (errorBody?.errorCode) {
+					setPayload(errorBody as ResponsePayload<T>);
+					return errorBody as ResponsePayload<T>;
+				}
 				throw new Error(`Error: ${response.statusText}`);
 			}
 

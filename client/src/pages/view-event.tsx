@@ -40,11 +40,14 @@ export const EventView = () => {
 	const removeFetch = useFetch<{done: 1}>();
 
 	const filteredSignees = useMemo(() => {
+		const sorted = [...eventSignees].sort((a, b) =>
+			new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+		);
 		if (!searchQuery.trim()) {
-			return eventSignees;
+			return sorted;
 		}
 		const query = searchQuery.toLowerCase();
-		return eventSignees.filter((signee) => {
+		return sorted.filter((signee) => {
 			const userInfo = eventUsers[signee.userID];
 			if (!userInfo) {
 				return false;
@@ -153,7 +156,7 @@ export const EventView = () => {
 			};
 
 			setEventSignees((prev) => {
-				if (prev.some((s) => s.signupID === signup.signupID)) {
+				if (prev.some((s) => s.userID === signup.userID)) {
 					return prev;
 				}
 				return [...prev, signup];

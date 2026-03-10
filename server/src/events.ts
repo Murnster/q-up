@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
-import { EventDetails, EventSignup, UserDetails } from '../../client/src/constants/interfaces.js';
-import { DeleteData_ByHashField, DeleteData_ByKey, GetAllData_FromHashKey, GetData_ByKey, GetData_ByKeys, GetDataByPattern, SetData_ByHashKey, SetData_ByKey } from './database.js';
+import { EventDetails, EventSignup, SignupErrors, UserDetails } from '../../client/src/constants/interfaces.js';
+import { DeleteData_ByHashField, DeleteData_ByKey, GetAllData_FromHashKey, GetData_ByHashKey, GetData_ByKey, GetData_ByKeys, GetDataByPattern, SetData_ByHashKey, SetData_ByKey } from './database.js';
 import { ServerCodes } from './server.js';
 import { broadcastToEvent } from './sse.js';
 import { SendResponse } from './util.js';
@@ -223,7 +223,19 @@ export const RegisterForEvent = async (req: Request, res: Response) => {
 		});
 		return;
 	}
-	
+
+	const existingSignup = await GetData_ByHashKey<EventSignup>(`event-signups:${eventID}`, userID);
+	if (existingSignup) {
+		SendResponse(res, {
+			status: ServerCodes.BAD_REQUEST,
+			payload: {
+				message: 'Already signed up for this event',
+				errorCode: SignupErrors.ALREADY_SIGNED_UP
+			}
+		});
+		return;
+	}
+
 	const signup: EventSignup = {
 		signupID: randomUUID(),
 		eventID,

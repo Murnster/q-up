@@ -51,6 +51,10 @@ export enum CreateUserErrors {
 	USERNAME_EXISTS = 1
 }
 
+export enum SignupErrors {
+	ALREADY_SIGNED_UP = 1
+}
+
 // #endregion
 
 // #region Network
