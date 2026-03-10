@@ -129,9 +129,59 @@ export const EventView = () => {
 		});
 	};
 
+	const isEnded = useMemo(() => {
+		return event ? Date.now() > event.endTime : false;
+	}, [event]);
+
 	useEffect(() => {
 		fetchEventDetails();
 	}, [fetchEventDetails]);
+
+	useEffect(() => {
+		if (!eventID || !hasFetched || !event || isEnded) {
+			return;
+		}
+
+		const es = new EventSource(`http://localhost:3000/events/${eventID}/stream`, {
+			withCredentials: true,
+		});
+
+		es.addEventListener('signup', (e) => {
+			const { signup, user: userDetails } = JSON.parse(e.data) as {
+				signup: EventSignup;
+				user: UserDetails;
+			};
+
+			setEventSignees((prev) => {
+				if (prev.some((s) => s.signupID === signup.signupID)) {
+					return prev;
+				}
+				return [...prev, signup];
+			});
+
+			if (userDetails) {
+				setEventUsers((prev) => ({
+					...prev,
+					[userDetails.userID]: userDetails,
+				}));
+			}
+		});
+
+		es.addEventListener('removal', (e) => {
+			const { userID: removedUserID } = JSON.parse(e.data) as { userID: string };
+
+			setEventSignees((prev) => prev.filter((s) => s.userID !== removedUserID));
+			setEventUsers((prev) => {
+				const next = { ...prev };
+				delete next[removedUserID];
+				return next;
+			});
+		});
+
+		return () => {
+			es.close();
+		};
+	}, [eventID, hasFetched, event, isEnded]);
 
 	if (!eventID) {
 		return <div className="content-page">Invalid Event ID</div>;
@@ -145,7 +195,6 @@ export const EventView = () => {
 		);
 	}
 
-	const isEnded = event ? Date.now() > event.endTime : false;
 	const isCreator = event && user ? event.createdBy === user.userID : false;
 	const isSearching = searchQuery.trim().length > 0;
 

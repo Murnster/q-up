@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { EventDetails, EventSignup, UserDetails } from '../../client/src/constants/interfaces.js';
 import { DeleteData_ByHashField, DeleteData_ByKey, GetAllData_FromHashKey, GetData_ByKey, GetData_ByKeys, GetDataByPattern, SetData_ByHashKey, SetData_ByKey } from './database.js';
 import { ServerCodes } from './server.js';
+import { broadcastToEvent } from './sse.js';
 import { SendResponse } from './util.js';
 
 interface CreateEventPayload {
@@ -232,6 +233,9 @@ export const RegisterForEvent = async (req: Request, res: Response) => {
 	
 	await SetData_ByHashKey(`event-signups:${eventID}`, userID, JSON.stringify(signup), Math.floor(((new Date(existingEvent.endTime).getTime() - Date.now()) / 1000)));
 
+	const userDetails = await GetData_ByKey<UserDetails>(`userDetails:${userID}`);
+	broadcastToEvent(eventID, 'signup', { signup, user: userDetails });
+
 	SendResponse(res, {
 		payload: { data: { done: 1, signup } }
 	});
@@ -272,6 +276,8 @@ export const RemoveAttendee = async (req: Request, res: Response) => {
 	}
 
 	await DeleteData_ByHashField(`event-signups:${eventID}`, userID);
+
+	broadcastToEvent(eventID, 'removal', { userID });
 
 	SendResponse(res, {
 		payload: { data: { done: 1 } }

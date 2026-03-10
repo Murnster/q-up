@@ -4,6 +4,7 @@ import * as auth from './authentication.js';
 import { GetData_ByKey } from './database.js';
 import * as events from './events.js';
 import { ServerCodes } from './server.js';
+import { EventStreamHandler } from './sse.js';
 import { SendResponse } from './util.js';
 
 export const endpoints = (app: express.Application) => {
@@ -20,6 +21,7 @@ export const endpoints = (app: express.Application) => {
 	app.post('/get-event-details', authHandler(events.GetEventWithSignups));
 	app.post('/register-event-signup', authHandler(events.RegisterForEvent));
 	app.post('/remove-attendee', authHandler(events.RemoveAttendee));
+	app.get('/events/:eventID/stream', authHandler(EventStreamHandler));
 };
 
 const authHandler = (handler: (req: express.Request, res: express.Response) => Promise<void>) => {
